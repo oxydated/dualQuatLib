@@ -1,5 +1,6 @@
 #include <cmath>
 #include "dualQuaternionFunctions.h"
+#include "linAlg.h"
 namespace oxyde {
 	namespace DQ {
 
@@ -122,6 +123,36 @@ namespace oxyde {
 
 			//	//return (qS, theSin), theUvector, theSfactor, theMvector
 			float cosHalf = qs;
+			theParameters.qS = qs;
+
+			if (std::abs(cosHalf - 1.0) < 0.00001) {
+				theParameters.theSin = 0.;
+				float dqxdqydqz[3] = { dqx, dqy, dqz };
+				float normDqxDqyDqz = 0.;
+				oxyde::linAlg::norm(dqxdqydqz, &normDqxDqyDqz);
+
+				if (std::abs(normDqxDqyDqz) < 0.00001) {
+					theParameters.Ux = 1.;
+					theParameters.Uy = 0.;
+					theParameters.Uz = 0.;
+
+					theParameters.theSfactor = 0.;
+				}
+				else {
+					theParameters.theSfactor = 2*normDqxDqyDqz;
+
+					theParameters.Ux = -dqx/ normDqxDqyDqz;
+					theParameters.Uy = -dqy / normDqxDqyDqz;
+					theParameters.Uz = -dqz / normDqxDqyDqz;
+				}
+
+				theParameters.Mx = 0.;
+				theParameters.My = 0.;
+				theParameters.Mz = 0.;
+
+				return;
+			}
+
 			float sinHalf = std::sqrt(std::pow(qx, 2) + std::pow(qy, 2) + std::pow(qz, 2));
 			float nx = qx / sinHalf;
 			float ny = qy / sinHalf;
@@ -131,7 +162,7 @@ namespace oxyde {
 			float my = (2 * dqy + ny*s*cosHalf) / (2.*sinHalf);
 			float mz = (2 * dqz + nz*s*cosHalf) / (2.*sinHalf);
 
-			theParameters.qS = cosHalf;
+			//theParameters.qS = cosHalf;
 			theParameters.theSin = sinHalf;
 			if (std::isnan<float>(nx) || std::isnan<float>(ny) || std::isnan<float>(nz)) {
 				theParameters.Ux = 1.;
@@ -156,6 +187,19 @@ namespace oxyde {
 				theParameters.My = my;
 				theParameters.Mz = mz;
 			}
+		}
+
+		void complementDualVersorParameters(const dualQuatParameters original, dualQuatParameters & complement)
+		{
+			complement.qS = -original.qS;
+			complement.theSin = original.theSin;
+				complement.Ux = -original.Ux;
+				complement.Uy = -original.Uy;
+				complement.Uz = -original.Uz;
+				complement.theSfactor = -original.theSfactor;
+				complement.Mx = -original.Mx;
+				complement.My = -original.My;
+				complement.Mz = -original.Mz;
 		}
 
 		//def transformFromSourceToDestinationAxis(sourceTransform, destTransform) :

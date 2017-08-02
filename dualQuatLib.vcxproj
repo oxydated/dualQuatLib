@@ -134,11 +134,13 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="debugLog.cpp" />
     <ClCompile Include="dualQuaternionFunctions.cpp" />
     <ClCompile Include="dualQuaternionMath.cpp" />
     <ClCompile Include="linAlg.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="debugLog.h" />
     <ClInclude Include="dualQuaternionFunctions.h" />
     <ClInclude Include="dualQuaternionMath.h" />
     <ClInclude Include="linAlg.h" />

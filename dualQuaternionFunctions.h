@@ -33,6 +33,8 @@ namespace oxyde {
 			//float& qS, float& theSin, float& Ux, float& Uy, float& Uz, float& theSfactor, float& Mx, float& My, float& Mz);
 			dualQuatParameters& theParameters);
 
+		void complementDualVersorParameters(const dualQuatParameters original, dualQuatParameters& complement);
+
 		//def transformFromSourceToDestinationAxis(sourceTransform, destTransform) :
 		void transformFromSourceToDestinationAxis(DUALQUAARG(source), DUALQUAARG(dest), DUALQUAARG(o));
 		//	# transforming from Source to Destination
