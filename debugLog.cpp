@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 #include <Windows.h>
+#include "debugLog.h"
 
 namespace {
 	std::wstring outStr;
@@ -67,11 +68,33 @@ namespace oxyde {
 			OutputDebugString(resultString.c_str());
 		}
 
+		void printPointInSpace(std::wstring name, const float px, const float py, const float pz)
+		{
+			outStream.str(outStr);
+			outStream << std::fixed;
+			outStream << name << " = {";
+			outStream << px << "," << py << "," << pz;
+			outStream << "}";
+			outStream << std::endl;
+
+			resultString = outStream.str();
+			OutputDebugString(resultString.c_str());
+		}
+
 		void printNamedParameter(std::wstring name, std::wstring wstr)
 		{
 			outStream.str(outStr);
 			outStream << std::fixed;
-			outStream << name << ": "<< wstr << std::endl;
+			outStream << name << " = "<< wstr << std::endl;
+			resultString = outStream.str();
+			OutputDebugString(resultString.c_str());
+		}
+
+		void printNamedParameter(std::wstring name, float par)
+		{
+			outStream.str(outStr);
+			outStream << std::fixed;
+			outStream << name << " = " << par << std::endl;
 			resultString = outStream.str();
 			OutputDebugString(resultString.c_str());
 		}

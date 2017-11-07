@@ -14,6 +14,8 @@ namespace oxyde {
 
 		void printMatrix(std::wstring name, const float* m);
 
+		void printPointInSpace(std::wstring name, const float px, const float py, const float pz);
+
 		void printLine();
 
 		void printText(std::string str);
@@ -21,5 +23,7 @@ namespace oxyde {
 		void printText(std::wstring wstr);
 
 		void printNamedParameter(std::wstring name, std::wstring wstr);
+
+		void printNamedParameter(std::wstring name, float par);
 	}
 }

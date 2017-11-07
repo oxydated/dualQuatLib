@@ -46,6 +46,14 @@ namespace oxyde {
 		//	return fromDestToSourceTransform
 
 		void extractRotationQuatFromDualQuat(DUALQUAARG(q), DUALQUAARG(o));
+
+		void getVectorFromAxisToPoint(DUALQUAARG(q), float& px, float& py, float& pz, float& vx, float& vy, float& vz);
+		
+		void getVectorFromAxisToOrigim(DUALQUAARG(q), float& vx, float& vy, float& vz);
+
+		void getSinAndCosFromPointAroundAxis(DUALQUAARG(q), float & px, float & py, float & pz, float &cosine, float &sine);
+
+		void getAngleForPointAroundQuatAxis(DUALQUAARG(q), float & px, float & py, float & pz, float &angleForPoint, float &quatAngle);
 	}
 }
 

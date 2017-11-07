@@ -1,6 +1,9 @@
 #include <cmath>
+#include <complex>
 #include "dualQuaternionFunctions.h"
 #include "linAlg.h"
+#include "debugLog.h"
+
 namespace oxyde {
 	namespace DQ {
 
@@ -218,6 +221,7 @@ namespace oxyde {
 			//														)
 
 			dual_quaternion_product(DUALQUACOMP(dest), DUALQUACOMP(conjSource), DUALQUACOMP(o));
+			//dual_quaternion_product(DUALQUACOMP(conjSource), DUALQUACOMP(dest), DUALQUACOMP(o));
 			//	return fromDestToSourceTransform
 		}
 
@@ -230,6 +234,108 @@ namespace oxyde {
 			dox = 0;
 			doy = 0;
 			doz = 0;
+		}
+
+		void getVectorFromAxisToPoint(DUALQUAARG(q), float & px, float & py, float & pz, float& vx, float& vy, float& vz)
+		{
+			float vecPartsQuared = std::pow(qx, 2) + std::pow(qy, 2) + std::pow(qz, 2);
+			vx = (dqz*qy - py*qx*qy + px*std::pow(qy, 2) - dqy*qz - pz*qx*qz + px*std::pow(qz, 2)) / vecPartsQuared;
+			vy = (-(dqz*qx) - px*qx*qy + dqx*qz - pz*qy*qz + py*(std::pow(qx, 2) + std::pow(qz, 2))) / vecPartsQuared;
+			vz = (dqy*qx - dqx*qy + pz*(std::pow(qx, 2) + std::pow(qy, 2)) - px*qx*qz - py*qy*qz) / vecPartsQuared;
+		}
+
+		void getVectorFromAxisToOrigim(DUALQUAARG(q), float& vx, float& vy, float& vz)
+		{
+			float vecPartsQuared = std::pow(qx, 2) + std::pow(qy, 2) + std::pow(qz, 2);
+			vx = (dqz*qy - dqy*qz) / vecPartsQuared;
+			vy = (-(dqz*qx) + dqx*qz) / vecPartsQuared;
+			vz = (dqy*qx - dqx*qy) / vecPartsQuared;
+		}
+
+		void getSinAndCosFromPointAroundAxis(DUALQUAARG(q), float & px, float & py, float & pz, float &cosine, float &sine) {
+			float vectorToPoint[3];
+			getVectorFromAxisToPoint(DUALQUACOMP(q), px, py, pz, vectorToPoint[0], vectorToPoint[1], vectorToPoint[2]);
+			float distanceToPoint = 0;
+			oxyde::linAlg::norm(vectorToPoint, &distanceToPoint);
+			float normalToPoint[3];
+			oxyde::linAlg::normalizeVector(vectorToPoint, normalToPoint);
+
+			//oxyde::log::printLine();
+			//oxyde::log::printText(L"getSinAndCosFromPointAroundAxis");
+
+			//oxyde::log::printPointInSpace(L"thePoint", px, py, pz);
+
+			//oxyde::log::printDualQuat(L"theQuat", DUALQUACOMP(q));
+			//oxyde::log::printPointInSpace(L"normalToPoint", normalToPoint[0], normalToPoint[1], normalToPoint[2]);
+			//oxyde::log::printNamedParameter(L"distanceToPoint", distanceToPoint);
+
+
+			float vectorToOrigin[3];
+			getVectorFromAxisToOrigim(DUALQUACOMP(q), vectorToOrigin[0], vectorToOrigin[1], vectorToOrigin[2]);
+			float distanceToOrigin = 0;
+			oxyde::linAlg::norm(vectorToOrigin, &distanceToOrigin);
+			float normalToOrigin[3];
+			oxyde::linAlg::normalizeVector(vectorToOrigin, normalToOrigin);
+
+
+			//oxyde::log::printPointInSpace(L"normalToOrigin", normalToOrigin[0], normalToOrigin[1], normalToOrigin[2]);
+			//oxyde::log::printNamedParameter(L"distanceToOrigin", distanceToOrigin);
+
+			float quatAxis[] = { qx, qy, qz };
+			float quatNormal[3];
+			oxyde::linAlg::normalizeVector(quatAxis, quatNormal);
+			float quatSine = 0;
+			oxyde::linAlg::norm(quatAxis, &quatSine);
+
+
+			//oxyde::log::printPointInSpace(L"quatNormal", quatNormal[0], quatNormal[1], quatNormal[2]);
+
+
+			float crossVector[3];
+			oxyde::linAlg::vectorCrossProduct(normalToOrigin, normalToPoint, crossVector);
+			float crossNormal[3];
+			oxyde::linAlg::normalizeVector(crossVector, crossNormal);
+			oxyde::linAlg::norm(crossVector, &sine);
+			float dotAxes;
+			oxyde::linAlg::vectorDotProduct(quatNormal, crossNormal, &dotAxes);
+			sine = (dotAxes > 0.0) ? sine : -sine;
+			
+			oxyde::linAlg::vectorDotProduct(normalToOrigin, normalToPoint, &cosine);
+			
+
+			//oxyde::log::printPointInSpace(L"crossNormal", crossNormal[0], crossNormal[1], crossNormal[2]);
+			//oxyde::log::printNamedParameter(L"cosine", cosine);
+			//oxyde::log::printNamedParameter(L"sine", sine);
+
+			//using complex = std::complex<double>;
+			////complex euler(qs, quatSine);
+			////float quatAngle = std::real(complex(0, -1)*(std::log(euler)))/2;
+			//float quatAngle = std::real(complex(0, -1)*(std::log(complex(qs, quatSine)))) * 2;
+			//float pointAngle = std::real(complex(0, -1)*(std::log(complex(cosine, sine))));
+
+			//oxyde::log::printNamedParameter(L"quatAngle", std::to_wstring(quatAngle));
+			//oxyde::log::printNamedParameter(L"pointAngle", std::to_wstring(pointAngle));
+			
+		}
+
+		void getAngleForPointAroundQuatAxis(DUALQUAARG(q), float & px, float & py, float & pz, float &angleForPoint, float &quatAngle){
+
+			float sine = 0, cosine = 0;
+			getSinAndCosFromPointAroundAxis(DUALQUACOMP(q), px, py, pz, cosine, sine);
+			
+			float quatAxis[] = { qx, qy, qz };
+			float quatSine = 0;
+			oxyde::linAlg::norm(quatAxis, &quatSine);
+
+			using complex = std::complex<double>;
+			//complex euler(qs, quatSine);
+			//float quatAngle = std::real(complex(0, -1)*(std::log(euler)))/2;
+			quatAngle = std::real(complex(0, -1)*(std::log(complex(qs, quatSine)))) * 2;
+			angleForPoint = std::real(complex(0, -1)*(std::log(complex(cosine, sine))));
+
+			//oxyde::log::printNamedParameter(L"quatAngle", quatAngle);
+			//oxyde::log::printNamedParameter(L"pointAngle", angleForPoint);
+
 		}
 	}
 }
