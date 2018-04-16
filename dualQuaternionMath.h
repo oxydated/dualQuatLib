@@ -2,6 +2,7 @@
 #define __DUALQUATERIONMATH_H__
 
 #include <math.h>
+#include <array>
 namespace oxyde {
 	namespace DQ {
 
@@ -14,6 +15,8 @@ namespace oxyde {
 #define DUALQUAVAR( q ) float q##s, q##x, q##y, q##z, d##q##s, d##q##x, d##q##y, d##q##z 
 
 		////////////////////////////////////////////////////////////////////////////////////////////
+
+		using dualQuat = std::array<float, 8>;
 
 		//dual_quaternion_product = lambda((qs, qx, qy, qz), (dqs, dqx, dqy, dqz)), ((gs, gx, gy, gz), (dgs, dgx, dgy, dgz)) : ((gs*qs - gx*qx - gy*qy - gz*qz, gs*qx + gx*qs - gy*qz + gz*qy, gs*qy + gx*qz + gy*qs - gz*qx, gs*qz - gx*qy + gy*qx + gz*qs), (dgs*qs - dgx*qx - dgy*qy - dgz*qz + dqs*gs - dqx*gx - dqy*gy - dqz*gz, dgs*qx + dgx*qs - dgy*qz + dgz*qy + dqs*gx + dqx*gs + dqy*gz - dqz*gy, dgs*qy + dgx*qz + dgy*qs - dgz*qx + dqs*gy - dqx*gz + dqy*gs + dqz*gx, dgs*qz - dgx*qy + dgy*qx + dgz*qs + dqs*gz + dqx*gy - dqy*gx + dqz*gs))
 		void dual_quaternion_product(DUALQUAARG(q),
