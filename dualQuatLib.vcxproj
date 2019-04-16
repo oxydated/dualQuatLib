@@ -138,12 +138,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="debugLog.cpp" />
+    <ClCompile Include="dualQuaternionEulerAngles.cpp" />
     <ClCompile Include="dualQuaternionFunctions.cpp" />
     <ClCompile Include="dualQuaternionMath.cpp" />
     <ClCompile Include="linAlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debugLog.h" />
+    <ClInclude Include="dualQuaternionEulerAngles.h" />
     <ClInclude Include="dualQuaternionFunctions.h" />
     <ClInclude Include="dualQuaternionMath.h" />
     <ClInclude Include="linAlg.h" />
